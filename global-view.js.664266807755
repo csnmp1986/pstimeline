@@ -1,0 +1,62 @@
+window.addEventListener('DOMContentLoaded', () => {
+  const globalViewButton = document.querySelector('button.global-view');
+  if (!globalViewButton) {
+    return;
+  }
+
+  const globalViewIcon = document.querySelector('button.global-view i');
+  const globalViewText = document.querySelector('button.global-view .global-view-text');
+  const toggleUrl = globalViewButton.dataset.toggleUrl;
+
+  // Need this to bust the cache so the button actually shows up as changed.
+  function hardReload() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('globalViewUpdate');
+    url.searchParams.append('globalViewUpdate', new Date().valueOf().toString(10));
+    window.location.href = url;
+  }
+
+  function globalViewIsOn() {
+    return globalViewButton.classList.contains('global-view-on');
+  }
+
+  function enableGlobalView() {
+    fetch(`${toggleUrl}/on?page=${document.location.pathname}`, {method: 'POST', mode: 'cors', credentials: 'include'}).then((response) => {
+      if (response.ok) {
+        if (globalViewButton.dataset.refreshPage === 'true') {
+          hardReload()
+        } else {
+          globalViewButton.classList.remove('global-view-off');
+          globalViewButton.classList.add('global-view-on');
+          globalViewIcon.classList.remove('fa-eye');
+          globalViewIcon.classList.add('fa-eye-slash')
+          globalViewText.innerText = 'Disable global view';
+        }
+      }
+    });
+  }
+
+  function disableGlobalView() {
+    fetch(`${toggleUrl}/off?page=${document.location.pathname}`, {method: 'POST', mode: 'cors', credentials: 'include'}).then((response) => {
+      if (response.ok) {
+        if (globalViewButton.dataset.refreshPage === 'true') {
+          hardReload()
+        } else {
+          globalViewButton.classList.add('global-view-off');
+          globalViewButton.classList.remove('global-view-on');
+          globalViewIcon.classList.add('fa-eye');
+          globalViewIcon.classList.remove('fa-eye-slash')
+          globalViewText.innerText = 'Enable global view';
+        }
+      }
+    });
+  }
+
+  globalViewButton.addEventListener('click', () => {
+    if (globalViewIsOn()) {
+      disableGlobalView();
+    } else {
+      enableGlobalView();
+    }
+  });
+});

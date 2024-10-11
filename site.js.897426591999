@@ -1,0 +1,36 @@
+var pageLayout = 'plain';
+var LAYOUTS_SOURCE_SITE = "/static_site/templates/id7/layouts/"
+
+jQuery(function($){
+    $.ajax(LAYOUTS_SOURCE_SITE + "slideshow-layout.js?" + Math.floor(new Date()/8.64e7), {cache: true, dataType:'script'});
+  $.ajax(LAYOUTS_SOURCE_SITE + "simple-features.js?" + Math.floor(new Date()/8.64e7), {cache: true, dataType:'script'});
+});
+var FACULTY_SOURCE_SITE = "/static_site/fac/arts/";
+
+(function($) {
+  $(function() {
+  	$('.id7-header-text h1').prepend('<a tabindex="0" class="fac-list" role="button" data-toggle="popover" data-container="body" data-placement="bottom"><i class="fa fa-bars"></i><span class="sr-only">Faculty list</span></a><span class="id7-parent-site-link visible-xs-inline faculty-link"><a href="/fac/arts/" title="Faculty of Arts home page">Arts</a></span><span class="id7-parent-site-link hidden-xs faculty-link"><a href="/fac/arts/" title="Faculty of Arts home page">Arts</a></span>');
+  });
+  
+   
+  $.get(FACULTY_SOURCE_SITE + "id7-fac-list.html?" + Math.floor(new Date()/8.64e7), function(data){
+    $(function() {
+      $('a.fac-list').popover({
+        html: true,
+        content: data
+      });
+    });
+  });
+
+})(jQuery);
+
+jQuery(function($){ 
+  // Click away to dismiss
+  $('body').on('click', function (e) {
+    // if clicking anywhere other than the popover itself or popover toggle
+    if ($(e.target).closest('[data-toggle="popover"]').length === 0
+        && $(e.target).closest('.popover').length === 0) { 
+      $('[data-toggle="popover"]').popover('hide');
+    }
+  });
+});
